@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:collab-mesh:a2a:peer-collaboration:1:artifact-reference",
+  "type": "object",
+  "required": ["artifactId", "mediaType", "sha256", "visibility"],
+  "properties": {
+    "artifactId": {"type": "string", "minLength": 1},
+    "mediaType": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "visibility": {"enum": ["task", "run", "private"]}
+  },
+  "additionalProperties": false
+}

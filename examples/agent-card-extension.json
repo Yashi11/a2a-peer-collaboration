@@ -1,0 +1,15 @@
+{
+  "uri": "urn:collab-mesh:a2a:peer-collaboration:1",
+  "description": "Auditable peer collaboration: shared learnings and bounded help",
+  "required": false,
+  "metadata": {
+    "urn:collab-mesh:a2a:peer-collaboration:1": {
+      "capability": {
+        "actions": ["help.request", "help.claim", "help.answer", "help.receipt", "learning.share", "learning.ack"],
+        "skills": ["python", "boundary-review"],
+        "maxConcurrentHelps": 1,
+        "acceptedArtifactTypes": ["text/plain", "application/json"]
+      }
+    }
+  }
+}

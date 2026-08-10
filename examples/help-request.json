@@ -1,0 +1,14 @@
+{
+  "extensions": ["urn:collab-mesh:a2a:peer-collaboration:1"],
+  "metadata": {
+    "urn:collab-mesh:a2a:peer-collaboration:1": {
+      "schemaVersion": "1.0",
+      "kind": "help.request",
+      "helpId": "help_7db4a9",
+      "parentTaskId": "task_42",
+      "question": "Does this recurrence require a zero boundary for m >= n?",
+      "requestedOutput": "Concise verdict with a hand-check.",
+      "expiresAt": "2026-08-10T10:00:00Z"
+    }
+  }
+}

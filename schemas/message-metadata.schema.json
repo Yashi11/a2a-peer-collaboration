@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:collab-mesh:a2a:peer-collaboration:1:message-metadata",
+  "type": "object",
+  "required": ["schemaVersion", "kind"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "kind": {"enum": ["help.request", "help.claim", "help.answer", "help.receipt", "learning.share", "learning.ack"]},
+    "helpId": {"type": "string", "minLength": 1}, "parentTaskId": {"type": "string", "minLength": 1},
+    "question": {"type": "string", "minLength": 1}, "requestedOutput": {"type": "string", "minLength": 1},
+    "expiresAt": {"type": "string", "format": "date-time"}, "answerId": {"type": "string", "minLength": 1},
+    "summary": {"type": "string", "minLength": 1}, "outcome": {"enum": ["used", "rejected"]},
+    "detail": {"type": "string", "minLength": 1}, "learningId": {"type": "string", "minLength": 1},
+    "scope": {"enum": ["task", "run"]}, "acknowledgement": {"type": "string", "minLength": 1},
+    "evidence": {"type": "array", "items": {"$ref": "artifact-reference.schema.json"}}
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "help.request"}}}, "then": {"required": ["helpId", "parentTaskId", "question", "requestedOutput", "expiresAt"]}},
+    {"if": {"properties": {"kind": {"const": "help.claim"}}}, "then": {"required": ["helpId", "parentTaskId"]}},
+    {"if": {"properties": {"kind": {"const": "help.answer"}}}, "then": {"required": ["helpId", "parentTaskId", "answerId", "summary"]}},
+    {"if": {"properties": {"kind": {"const": "help.receipt"}}}, "then": {"required": ["helpId", "parentTaskId", "answerId", "outcome", "detail"]}},
+    {"if": {"properties": {"kind": {"const": "learning.share"}}}, "then": {"required": ["learningId", "scope", "summary"]}},
+    {"if": {"properties": {"kind": {"const": "learning.ack"}}}, "then": {"required": ["learningId", "scope", "summary", "acknowledgement"]}}
+  ],
+  "additionalProperties": false
+}
