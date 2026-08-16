@@ -4,14 +4,27 @@
   "type": "object",
   "required": ["schemaVersion", "kind"],
   "properties": {
-    "schemaVersion": {"const": "1.0"},
-    "kind": {"enum": ["help.request", "help.claim", "help.answer", "help.receipt", "learning.share", "learning.ack"]},
-    "helpId": {"type": "string", "minLength": 1}, "parentTaskId": {"type": "string", "minLength": 1},
-    "question": {"type": "string", "minLength": 1}, "requestedOutput": {"type": "string", "minLength": 1},
-    "expiresAt": {"type": "string", "format": "date-time"}, "answerId": {"type": "string", "minLength": 1},
-    "summary": {"type": "string", "minLength": 1}, "outcome": {"enum": ["used", "rejected"]},
-    "detail": {"type": "string", "minLength": 1}, "learningId": {"type": "string", "minLength": 1},
-    "scope": {"enum": ["task", "run"]}, "acknowledgement": {"type": "string", "minLength": 1},
+    "schemaVersion": {"enum": ["1.0", "1.1"]},
+    "kind": {"enum": ["help.request", "help.claim", "help.answer", "help.receipt", "learning.share", "learning.ack", "evaluation.attestation"]},
+    "helpId": {"type": "string", "minLength": 1},
+    "parentTaskId": {"type": "string", "minLength": 1},
+    "question": {"type": "string", "minLength": 1},
+    "requestedOutput": {"type": "string", "minLength": 1},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "answerId": {"type": "string", "minLength": 1},
+    "answerDigest": {"$ref": "#/$defs/sha256"},
+    "summary": {"type": "string", "minLength": 1},
+    "receiptId": {"type": "string", "minLength": 1},
+    "outcome": {"enum": ["used", "rejected"]},
+    "detail": {"type": "string", "minLength": 1},
+    "artifactHashes": {"type": "array", "items": {"$ref": "#/$defs/sha256"}, "uniqueItems": true},
+    "codeSnapshot": {"$ref": "#/$defs/codeSnapshot"},
+    "evaluatorSnapshot": {"$ref": "#/$defs/evaluatorSnapshot"},
+    "attestationId": {"type": "string", "minLength": 1},
+    "evaluatorOutcome": {"enum": ["passed", "failed", "inconclusive"]},
+    "learningId": {"type": "string", "minLength": 1},
+    "scope": {"enum": ["task", "run"]},
+    "acknowledgement": {"type": "string", "minLength": 1},
     "evidence": {"type": "array", "items": {"$ref": "artifact-reference.schema.json"}}
   },
   "allOf": [
@@ -20,7 +33,24 @@
     {"if": {"properties": {"kind": {"const": "help.answer"}}}, "then": {"required": ["helpId", "parentTaskId", "answerId", "summary"]}},
     {"if": {"properties": {"kind": {"const": "help.receipt"}}}, "then": {"required": ["helpId", "parentTaskId", "answerId", "outcome", "detail"]}},
     {"if": {"properties": {"kind": {"const": "learning.share"}}}, "then": {"required": ["learningId", "scope", "summary"]}},
-    {"if": {"properties": {"kind": {"const": "learning.ack"}}}, "then": {"required": ["learningId", "scope", "summary", "acknowledgement"]}}
+    {"if": {"properties": {"kind": {"const": "learning.ack"}}}, "then": {"required": ["learningId", "scope", "summary", "acknowledgement"]}},
+    {"if": {"properties": {"kind": {"const": "evaluation.attestation"}}}, "then": {"required": ["helpId", "parentTaskId", "attestationId", "receiptId", "answerId", "evaluatorOutcome", "codeSnapshot", "evaluatorSnapshot"]}},
+    {"if": {"properties": {"schemaVersion": {"const": "1.1"}, "kind": {"const": "help.answer"}}, "required": ["schemaVersion", "kind"]}, "then": {"required": ["answerDigest"]}},
+    {"if": {"properties": {"schemaVersion": {"const": "1.1"}, "kind": {"const": "help.receipt"}}, "required": ["schemaVersion", "kind"]}, "then": {"required": ["receiptId", "answerDigest", "artifactHashes", "codeSnapshot", "evaluatorSnapshot"]}}
   ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "codeSnapshot": {
+      "type": "object", "required": ["revision", "diffHash"], "additionalProperties": false,
+      "properties": {"revision": {"type": "string", "minLength": 1}, "diffHash": {"$ref": "#/$defs/sha256"}}
+    },
+    "evaluatorSnapshot": {
+      "type": "object", "required": ["evaluatorId", "evaluatorVersion", "configurationHash", "datasetHash"], "additionalProperties": false,
+      "properties": {
+        "evaluatorId": {"type": "string", "minLength": 1}, "evaluatorVersion": {"type": "string", "minLength": 1},
+        "configurationHash": {"$ref": "#/$defs/sha256"}, "datasetHash": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
   "additionalProperties": false
 }

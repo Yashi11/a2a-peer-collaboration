@@ -1,0 +1,8 @@
+{
+  "policyVersion": "shadow-routing.v1",
+  "mode": "shadow",
+  "minimumAttestations": 20,
+  "minimumAdoptionRate": 0.25,
+  "minimumEvaluationPassRate": 0.7,
+  "reducedRoutingWeight": 0.5
+}

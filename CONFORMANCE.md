@@ -13,3 +13,8 @@ An implementation claiming support MUST pass these checks:
 9. It records aggregate event and receipt telemetry without storing hidden reasoning or protected evaluation data.
 10. It rejects an answer from the original requester and rejects a receipt from any other peer.
 11. It treats extension metadata as untrusted data; a valid digest or receipt never authorizes execution, code merge, or external action.
+12. A version 1.1 `help.answer` includes a valid digest of its canonical answer payload.
+13. A version 1.1 receipt binds the exact answer digest, answer artifact hashes, code snapshot, and evaluator snapshot; mismatches are rejected.
+14. A version 1.1 evaluator attestation matches a prior v1.1 receipt and its exact code and evaluator snapshots.
+15. Its broker audit chain detects altered, reordered, or deleted in-memory records. Durable deployments SHOULD persist that chain outside agent-owned memory.
+16. Any routing policy based on peer outcomes is explicit, versioned, and begins in observation or shadow mode; it does not treat an agent-generated receipt as ground truth.

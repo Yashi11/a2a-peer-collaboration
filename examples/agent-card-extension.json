@@ -5,10 +5,11 @@
   "metadata": {
     "urn:collab-mesh:a2a:peer-collaboration:1": {
       "capability": {
-        "actions": ["help.request", "help.claim", "help.answer", "help.receipt", "learning.share", "learning.ack"],
+        "actions": ["help.request", "help.claim", "help.answer", "help.receipt", "learning.share", "learning.ack", "evaluation.attestation"],
         "skills": ["python", "boundary-review"],
         "maxConcurrentHelps": 1,
-        "acceptedArtifactTypes": ["text/plain", "application/json"]
+        "acceptedArtifactTypes": ["text/plain", "application/json"],
+        "supportedSchemaVersions": ["1.0", "1.1"]
       }
     }
   }

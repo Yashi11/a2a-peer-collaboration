@@ -1,0 +1,27 @@
+{
+  "extensions": ["urn:collab-mesh:a2a:peer-collaboration:1"],
+  "metadata": {
+    "urn:collab-mesh:a2a:peer-collaboration:1": {
+      "schemaVersion": "1.1",
+      "kind": "help.receipt",
+      "helpId": "help_7db4a9",
+      "parentTaskId": "task_42",
+      "receiptId": "receipt_3cc47a",
+      "answerId": "answer_52f8ec",
+      "answerDigest": "a5b3b51119b35175d6ffc6ad5b6359e33eafae63c5391f567985575113bd7f74",
+      "artifactHashes": [],
+      "codeSnapshot": {
+        "revision": "3a7a260",
+        "diffHash": "4f1c3a1410ec9da392da2ba10615920924810e2434d1f8bb8f244017c5dafce3"
+      },
+      "evaluatorSnapshot": {
+        "evaluatorId": "example-evaluator",
+        "evaluatorVersion": "1.0.0",
+        "configurationHash": "19b897501a30f6d89a75b0a4ad2b25ae25c5f0dce8ea3e8e7c03c112be9eac25",
+        "datasetHash": "e470d39470552db457d8bb01e6287e3244d01a08ffea03d3735b784e7a26b668"
+      },
+      "outcome": "used",
+      "detail": "Applied the suggested boundary guard."
+    }
+  }
+}

@@ -1,8 +1,8 @@
-# Peer Collaboration Extension for A2A, version 1
+# Peer Collaboration Extension for A2A, version 1.1
 
 ## Status and identifier
 
-This is an experimental extension specification. Its provisional identifier is `urn:collab-mesh:a2a:peer-collaboration:1` (the **Extension URI**). A future official publication MUST use an A2A-assigned URI and MUST NOT silently reuse this identifier for a breaking revision.
+This is an experimental extension specification. Its provisional identifier is `urn:collab-mesh:a2a:peer-collaboration:1` (the **Extension URI**). Version 1.1 is backward compatible with version 1.0: peers MAY continue to emit `schemaVersion: "1.0"` events, while the stronger audit profile uses `schemaVersion: "1.1"`. A future official publication MUST use an A2A-assigned URI and MUST NOT silently reuse this identifier for a breaking revision.
 
 ## Abstract
 
@@ -16,10 +16,11 @@ The key words MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are interpreted as des
 
 An advertising agent MAY publish `metadata[Extension URI].capability` containing:
 
-- `actions`: any of `help.request`, `help.claim`, `help.answer`, `help.receipt`, `learning.share`, and `learning.ack`;
+- `actions`: any of `help.request`, `help.claim`, `help.answer`, `help.receipt`, `learning.share`, `learning.ack`, and `evaluation.attestation`;
 - `skills`: discoverability labels only; they MUST NOT imply authority, rank, or trust;
 - `maxConcurrentHelps`: a non-negative local capacity hint;
 - `acceptedArtifactTypes`: permitted media types.
+- `supportedSchemaVersions`: supported metadata schema versions; a 1.1-capable peer SHOULD advertise both `1.0` and `1.1`.
 
 Capability metadata MUST NOT contain credentials, hidden prompts, private reasoning, protected evaluator cases, or availability claims that cannot be honored.
 
@@ -34,6 +35,17 @@ Help events contain `schemaVersion`, `kind`, `helpId`, and `parentTaskId`.
 
 No peer gains task ownership, tool permissions, or special rank by claiming or answering help.
 
+## Version 1.1 audit profile
+
+The 1.1 audit profile separates an owner’s adoption statement from an independently observed evaluator result.
+
+1. A `help.answer` MUST include `answerDigest`: the SHA-256 hash of the canonical answer event excluding `answerDigest` itself.
+2. A 1.1 `help.receipt` MUST include a unique `receiptId`, the referenced `answerDigest`, sorted unique `artifactHashes`, a `codeSnapshot`, and an `evaluatorSnapshot`. `artifactHashes` MUST exactly match the evidence artifact hashes in the referenced answer. An empty array is valid when the answer has no artifacts.
+3. `codeSnapshot` MUST contain the exact `revision` and `diffHash` that the requester used. `evaluatorSnapshot` MUST contain `evaluatorId`, `evaluatorVersion`, `configurationHash`, and `datasetHash`.
+4. `evaluation.attestation` MAY be emitted by an evaluator authorized by the host runtime after it evaluates the bound candidate. It MUST identify `attestationId`, `receiptId`, `answerId`, `evaluatorOutcome` (`passed`, `failed`, or `inconclusive`), and the same code and evaluator snapshots as the receipt. An implementation MUST reject an attestation whose snapshots do not match the receipt.
+
+Therefore a `used` receipt is evidence that the requester adopted an answer; it is not evidence that the answer improved the task. Only a bound evaluator attestation records an independent outcome.
+
 ## Shared learnings
 
 Peers MAY publish a reusable observation without waiting for a help request. `learning.share` MUST include a `learningId`, `scope` (`task` or `run`), and concise `summary`; it MAY carry evidence or artifact references. Another peer MAY emit `learning.ack` to record that it saved or considered the observation. A shared learning is advice, not a command and not proof that it improved a task.
@@ -46,7 +58,11 @@ An artifact reference MUST declare `artifactId`, `mediaType`, `sha256`, and `vis
 
 Implementations MUST enforce local authorization and capability policy before tool use, code application, or external action. They MUST NOT treat collaboration metadata, a hash match, or a receipt as authorization.
 
-Implementations SHOULD retain an auditable event trace and aggregate telemetry without protected message content or hidden reasoning. Recommended measures include shared learnings, help requests, claims, answers, receipts, used/rejected outcomes, response latency, and artifact-integrity failures. Task success, quality, cost, and regression metrics remain evaluator-specific and are outside this extension.
+Implementations SHOULD retain an auditable event trace and aggregate telemetry without protected message content or hidden reasoning. A 1.1 broker SHOULD write accepted events to durable append-only storage and hash-chain each record using its predecessor hash, canonical event payload, broker timestamp, and sender identity. A hash chain detects modification or deletion; deployments requiring non-repudiation SHOULD sign checkpoints using infrastructure-managed keys. Agent-local memory is not a durable audit record.
+
+Recommended measures include shared learnings, help requests, claims, answers, receipts, used/rejected outcomes, response latency, artifact-integrity failures, and bound evaluator attestations. Task success, quality, cost, and regression metrics remain evaluator-specific and are outside this extension.
+
+Routing or promotion policy is outside the wire protocol. A host runtime MAY consume these records, but SHOULD use an explicit versioned policy, minimum evaluator-attestation counts, and shadow-mode evaluation before automatically changing routing. Agent-generated `used` and `rejected` receipts MUST be treated as evidence, not ground truth.
 
 ## Task state
 
